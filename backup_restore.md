@@ -5,7 +5,7 @@ In our PostgreSQL cluster setup, we have one primary and one hot standby server.
 We have more then 5000 cluster spreads across Openstack private cloud, AWS, Azure and GCP clouds. To support point in recovery (PITR) of the PostgreSQL database we have WAL archiving for all these cluster. For base backup we take either snapshot or tar of the data directory depending upon different IaaS (Infrastructure as a Service) and in recovery process we restore these snapshots or tarball, and we apply the archived WAL logs on top of that restored data.
 
 ### Base backup
-There are cron jobs to schedule the backup for different clusters. The backup is taken for each cluster in every 8 hours interval except Openstack. In case of Openstack, the interval is 24 hours. Each backup is stored against a guid to identify the backup uniquely. 
+We have a component called Service-Fabric, it helps in managing the house keeping activities of these clusters. This component takes care of triggering the backup periodically. It triggers the backup for each cluster in every 8 hours interval except Openstack. In case of Openstack, the interval is 24 hours. Each backup is stored against a guid to identify the backup uniquely. 
 
 We take base backup from primary server.  And it is an online backup, which means during backup the service is available for use. The backup approaches are different for different IaaS. In Openstack, first we take a snapshot and then we create a volume from that snapshot. And then we tar and encrypt the data directory that is present in this newly created volume. Finally, we upload the encrypted tarball to the swift. It takes time depending on the data size. For a data size of 100 GB it takes around 1 hour 30 minutes. 
 
